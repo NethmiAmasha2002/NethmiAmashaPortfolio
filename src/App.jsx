@@ -101,6 +101,8 @@ const projects = [
  
 const skills = [
   { name: "React.js", icon: "⚛" },
+  { name: "Angular", icon: "🅰️" },
+  { name: "Spring Boot", icon: "🌱" },
   { name: "Flutter", icon: "🦋" },
   { name: "Node.js", icon: "🟢" },
   { name: "Python", icon: "🐍" },
@@ -116,6 +118,7 @@ const skills = [
   { name: "Java", icon: "☕" },
   { name: "Rasa NLP", icon: "💬" },
   { name: "OpenCV", icon: "👁" },
+
 ];
  
 const awards = [
