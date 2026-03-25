@@ -6,6 +6,17 @@ import myPhoto from "./assets/mine.jpg";
  
 const projects = [
   {
+    title: "GlowSkin",
+    subtitle: "Full-Stack E-Commerce Platform · Ongoing",
+    desc: "Skincare platform with User and Admin portals for browsing, ordering, and managing products.",
+    tech: ["Angular", "Spring Boot", "Java", "REST API", "MySQL", "JWT Auth"],
+    github: "https://github.com/NethmiAmasha2002",   // ← add your repo link when ready
+    live: "",     // ← add live URL when deployed
+    color: "#f472b6",
+    ongoing: true,
+  },
+  
+  {
     title: "Learnova",
     subtitle: "Full-Stack Math Tutoring App",
     desc: "Cross-platform mobile app for teacher–student class management with real-time chat, file sharing, and role-based access control.",
@@ -352,7 +363,6 @@ body{background:var(--navy);color:var(--white);font-family:'Plus Jakarta Sans',s
 .skill-icon{font-size:26px;margin-bottom:10px;display:block;height:32px;line-height:32px}
 .skill-name{font-size:13px;font-weight:700;color:var(--white)}
  
-/* PROJECTS */
 .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px}
 .proj-card{
   background:var(--navy2);border:1px solid var(--border);
@@ -519,31 +529,27 @@ function ContactForm({ compact = false }) {
     if (!form.name || !form.email || !form.message) { setStatus("error_fields"); return; }
     setStatus("sending");
     try {
-      const res = await fetch("https://api.web3forms.com/submit", {
+      const res = await fetch("https://formspree.io/f/mbdprwej", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
-          // ▶ Replace with your free key from web3forms.com
-          access_key: "YOUR_WEB3FORMS_KEY",
           name: form.name,
           email: form.email,
           subject: form.subject || `Portfolio message from ${form.name}`,
           message: form.message,
-          from_name: "Nethmi Portfolio",
         }),
       });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok) {
         setStatus("success");
         setForm({ name: "", email: "", subject: "", message: "" });
-      } else { throw new Error("API failed"); }
-    } catch {
-      // Fallback: open email client pre-filled
-      const s = encodeURIComponent(form.subject || `Portfolio message from ${form.name}`);
-      const b = encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`);
-      window.open(`mailto:amashanethmi200212@gmail.com?subject=${s}&body=${b}`, "_blank");
-      setStatus("success");
-      setForm({ name: "", email: "", subject: "", message: "" });
+      } else {
+        setStatus("error_submit");
+        console.error("Formspree error:", data);
+      }
+    } catch (err) {
+      setStatus("error_submit");
+      console.error("Network error:", err);
     }
   };
  
@@ -577,6 +583,7 @@ function ContactForm({ compact = false }) {
       </button>
       {status === "success" && <div className="cf-success">✅ Message sent! I'll get back to you soon.</div>}
       {status === "error_fields" && <div className="cf-error">⚠️ Please fill in your name, email, and message.</div>}
+      {status === "error_submit" && <div className="cf-error">❌ Something went wrong. Please try again or email me directly.</div>}
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
@@ -618,11 +625,20 @@ function LiveIcon() {
 function ProjectCard({ p, i }) {
   return (
     <R delay={i * 55}>
-      <div className="proj-card">
+      <div className="proj-card" style={{ borderColor: p.ongoing ? `${p.color}44` : undefined }}>
         <div className="proj-glow" style={{ background: p.color }} />
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:14, gap:10 }}>
-          <div>
-            <div className="proj-subtitle">{p.subtitle}</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
+              <div className="proj-subtitle">{p.subtitle}</div>
+              {p.ongoing && (
+                <span style={{
+                  borderRadius:6, padding:"2px 8px",
+                  fontSize:10, fontWeight:700, letterSpacing:1,
+                  textTransform:"uppercase", whiteSpace:"nowrap",
+                }}></span>
+              )}
+            </div>
             <div className="proj-title">{p.title}</div>
           </div>
           <div className="proj-color-dot" style={{ background:p.color+"1a", border:`1px solid ${p.color}44` }}>
@@ -634,6 +650,12 @@ function ProjectCard({ p, i }) {
         <div className="proj-links">
           {p.github && <a className="proj-link gh" href={p.github} target="_blank" rel="noreferrer"><GitHubIcon /> GitHub</a>}
           {p.live   && <a className="proj-link lv" href={p.live}   target="_blank" rel="noreferrer"><LiveIcon /> Live Demo</a>}
+          {!p.github && !p.live && p.ongoing && (
+            <span style={{ fontSize:12.5, color:"var(--muted)", fontStyle:"italic", display:"flex", alignItems:"center", gap:6 }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Coming soon — in active development
+            </span>
+          )}
         </div>
       </div>
     </R>
@@ -740,7 +762,6 @@ export default function Portfolio() {
           <div style={{ display:"flex", flexDirection:"column", gap:13 }}>
             {[
               { e:"📧", label:"Email",    val:"amashanethmi200212@gmail.com" },
-              { e:"📞", label:"Phone",    val:"0774953424" },
               { e:"📍", label:"Location", val:"Galle, Sri Lanka" },
               { e:"🎓", label:"Status",   val:"Final Year · BSc Software Engineering" },
             ].map((x, i) => (
@@ -923,7 +944,6 @@ export default function Portfolio() {
                 </p>
                 <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
                   <a className="contact-link" href="mailto:amashanethmi200212@gmail.com">📧 amashanethmi200212@gmail.com</a>
-                  <a className="contact-link" href="tel:+94774953424">📞 +94 77 495 3424</a>
                   <a className="contact-link" href="https://www.linkedin.com/in/danethmi-amasha" target="_blank" rel="noreferrer">💼 linkedin.com/in/danethmi-amasha</a>
                   <a className="contact-link" href="https://github.com/NethmiAmasha2002" target="_blank" rel="noreferrer">🐙 github.com/NethmiAmasha2002</a>
                 </div>
